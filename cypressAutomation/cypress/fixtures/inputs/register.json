@@ -1,0 +1,17 @@
+[
+  {
+    "name": "valid user",
+    "email": "{{uniqueEmail}}",
+    "password": "test123"
+  },
+  {
+    "name":"conflict user",
+    "email":"{{conflictEmail}}",
+    "password":"test123"
+  },
+{
+    "name": "invalid user",
+    "email": "test123456yopmail.com",
+    "password": "test123"
+}
+]

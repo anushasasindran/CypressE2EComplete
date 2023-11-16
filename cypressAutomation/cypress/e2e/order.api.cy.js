@@ -1,0 +1,6 @@
+import './API/registerApi.cy.js'
+import './API/authAPI.cy.js'
+import './API/addNotesAPI.cy.js'
+import './API/getNoteAPI.cy.js'
+import './API/editNotesAPI.cy.js'
+import './API/deleteNotesAPI.cy.js'

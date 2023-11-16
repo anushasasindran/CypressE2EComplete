@@ -1,0 +1,321 @@
+{
+  "stats": {
+    "suites": 6,
+    "tests": 7,
+    "passes": 7,
+    "pending": 0,
+    "failures": 0,
+    "start": "2023-09-27T09:25:33.100Z",
+    "end": "2023-09-27T09:25:38.228Z",
+    "duration": 5128,
+    "testsRegistered": 7,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "a0a4df19-4a82-433a-9a41-dc15bf9bc427",
+      "title": "",
+      "fullFile": "cypress\\e2e\\order.api.cy.js",
+      "file": "cypress\\e2e\\order.api.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "96f0c122-b5b6-45f0-84c2-633bb67ff7d7",
+          "title": "Register API",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Should register a new user if valid, else throw error",
+              "fullTitle": "Register API Should register a new user if valid, else throw error",
+              "timedOut": null,
+              "duration": 1704,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.fixture('inputs/register').then(testData => {\n  testData.forEach(userData => {\n    if (userData.email.includes('{{uniqueEmail}}')) {\n      email = generateUniqueEmail();\n      userData.email = email;\n    }\n    if (userData.email.includes('{{conflictEmail}}')) {\n      userData.email = email;\n    }\n    cy.apiRequest('POST', 'notes/api/users/register', userData, null).then(response => {\n      const responseBody = response.body;\n      const statusCode = response.status;\n      if (response.status === 201) {\n        expect(statusCode).to.equal(201);\n        expect(responseBody.success).to.equal(true);\n        expect(responseBody.message).to.equal('User account created successfully');\n        expect(responseBody.data).to.have.property(\"id\");\n        expect(responseBody.data.name).to.equal(userData.name);\n        expect(responseBody.data.email).to.equal(email);\n        cy.writeFile('cypress/fixtures/outputs/registerResponse.json', {\n          id: responseBody.data.id,\n          email: responseBody.data.email,\n          name: userData.name,\n          password: userData.password\n        });\n      } else if (response.status === 409) {\n        expect(statusCode).to.equal(409);\n        expect(responseBody.success).to.equal(false);\n        expect(responseBody.message).to.equal('An account already exists with the same email address');\n      } else if (response.status === 400) {\n        expect(responseBody.success).to.equal(false);\n        expect(statusCode).to.equal(400);\n      } else {\n        cy.log(`Failed with status code - ${statusCode}`);\n      }\n    });\n  });\n});",
+              "err": {},
+              "uuid": "b2e89996-4821-4255-bd06-bf875535c373",
+              "parentUUID": "96f0c122-b5b6-45f0-84c2-633bb67ff7d7",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "b2e89996-4821-4255-bd06-bf875535c373"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 1704,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        },
+        {
+          "uuid": "2a6a2322-2ac5-414f-98e7-e6930460485e",
+          "title": "Login API",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Should generate token for registered user",
+              "fullTitle": "Login API Should generate token for registered user",
+              "timedOut": null,
+              "duration": 687,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.fixture('outputs/registerResponse').then(authData => {\n  const modifiedAuthData = {\n    email: authData.email,\n    password: authData.password\n  };\n  cy.apiRequest('POST', 'notes/api/users/login', modifiedAuthData, null).then(response => {\n    const responseBody = response.body;\n    expect(response.status).to.equal(200);\n    expect(responseBody.data).to.have.property(\"token\");\n    const expectedData = {\n      success: true,\n      message: 'Login successful',\n      'data.id': authData.id,\n      'data.name': authData.name,\n      'data.email': authData.email\n    };\n    Object.entries(expectedData).forEach(([key, value]) => {\n      expect(responseBody).to.have.nested.property(key, value);\n    });\n    //expect(responseBody.success).to.equal(true)\n    //expect(responseBody.message).to.equal('Login successful')\n    //expect(responseBody.data.id).to.equal(authData.id)\n    //expect(responseBody.data.name).to.equal(authData.name)\n    //expect(responseBody.data.email).to.equal(authData.email)\n    cy.writeFile('cypress/fixtures/outputs/authResponse.json', {\n      id: responseBody.data.id,\n      email: responseBody.data.email,\n      name: responseBody.data.name,\n      token: responseBody.data.token\n    }).then(() => {\n      Cypress.log({\n        name: 'Positive Test',\n        displayName: 'Authentication of registered user',\n        message: 'Authentication was successful'\n      });\n    });\n  });\n});",
+              "err": {},
+              "uuid": "5581fc45-b02a-4b5f-91c1-4477e98d48e2",
+              "parentUUID": "2a6a2322-2ac5-414f-98e7-e6930460485e",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "5581fc45-b02a-4b5f-91c1-4477e98d48e2"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 687,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        },
+        {
+          "uuid": "4c32e326-80e5-42d4-8cfa-e25d2967e2fb",
+          "title": "Add notes API",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Should add notes",
+              "fullTitle": "Add notes API Should add notes",
+              "timedOut": null,
+              "duration": 480,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.fixture('inputs/notes.json').then(notesData => {\n  notesData.id = userId;\n  cy.apiRequest('POST', 'notes/api/notes', notesData, headers).then(response => {\n    const responseBody = response.body;\n    expect(response.status).to.equal(200);\n    expect(responseBody.success).to.equal(true);\n    expect(responseBody.message).to.equal('Note successfully created');\n    expect(responseBody.data).to.have.property(\"id\");\n    cy.writeFile('cypress/fixtures/outputs/notesResponse.json', {\n      noteId: responseBody.data.id,\n      title: responseBody.data.title,\n      description: responseBody.data.description,\n      userId: responseBody.data.user_id,\n      category: responseBody.data.category\n    });\n    Cypress.log({\n      //cypress method that is synchronous and run immediately\n      name: 'Positive Test',\n      displayName: 'Notes creation',\n      message: 'Notes creation was successful'\n    });\n  });\n});",
+              "err": {},
+              "uuid": "60b6bd3d-0176-4172-bb9c-3a8670396ab0",
+              "parentUUID": "4c32e326-80e5-42d4-8cfa-e25d2967e2fb",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "60b6bd3d-0176-4172-bb9c-3a8670396ab0"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 480,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        },
+        {
+          "uuid": "403e1fd6-35bd-4de4-8088-af76884ce9fb",
+          "title": "Get notes API",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Should get notes",
+              "fullTitle": "Get notes API Should get notes",
+              "timedOut": null,
+              "duration": 444,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.fixture('outputs/notesResponse.json').then(notesData => {\n  const noteId = notesData.noteId;\n  cy.apiRequest('GET', `notes/api/notes/${noteId}`, null, headers).then(response => {\n    const responseBody = response.body;\n    expect(response.status).to.equal(200);\n    expect(responseBody.success).to.equal(true);\n    expect(responseBody.message).to.equal('Note successfully retrieved');\n  });\n});",
+              "err": {},
+              "uuid": "a75f6bed-b217-41e0-a0c8-793e0bc033c6",
+              "parentUUID": "403e1fd6-35bd-4de4-8088-af76884ce9fb",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "a75f6bed-b217-41e0-a0c8-793e0bc033c6"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 444,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        },
+        {
+          "uuid": "2d155ce6-eec5-4859-938f-5bb8372dc21b",
+          "title": "Edit notes API",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Should edit notes",
+              "fullTitle": "Edit notes API Should edit notes",
+              "timedOut": null,
+              "duration": 548,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.fixture('outputs/notesResponse').then(responseData => {\n  const modifiedData = {\n    id: responseData.noteId,\n    title: responseData.title + 'Edited',\n    category: 'Personal',\n    completed: false,\n    description: responseData.description + 'Edited'\n  };\n  cy.apiRequest('PUT', `notes/api/notes/${responseData.noteId}`, modifiedData, headers).then(response => {\n    const responseBody = response.body;\n    expect(response.status).to.equal(200);\n    expect(responseBody.success).to.equal(true);\n    expect(responseBody.message).to.equal('Note successfully Updated');\n  });\n});",
+              "err": {},
+              "uuid": "fe8e26d2-6133-4cf0-a42d-4829410ff625",
+              "parentUUID": "2d155ce6-eec5-4859-938f-5bb8372dc21b",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "fe8e26d2-6133-4cf0-a42d-4829410ff625"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 548,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        },
+        {
+          "uuid": "2e767b2f-bca5-4474-be8c-7a4b3ed83001",
+          "title": "Delete notes API",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Should Delete notes if exists, else throw 404 error",
+              "fullTitle": "Delete notes API Should Delete notes if exists, else throw 404 error",
+              "timedOut": null,
+              "duration": 853,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.fixture('outputs/notesResponse').then(responseData => {\n  const attempts = 2;\n  for (let i = 0; i < attempts; i++) {\n    cy.wrap(i).then(() => {\n      cy.apiRequest('DELETE', `notes/api/notes/${responseData.noteId}`, null, headers).then(response => {\n        const responseBody = response.body;\n        const statusCode = response.status;\n        if (statusCode === 200) {\n          expect(response.status).to.equal(200);\n          expect(responseBody.success).to.equal(true);\n          expect(responseBody.message).to.equal('Note successfully deleted');\n        } else if (statusCode === 404) {\n          expect(response.status).to.equal(404);\n          expect(responseBody.success).to.equal(false);\n          expect(responseBody.message).to.equal('No note was found with the provided ID, Maybe it was deleted');\n        }\n      });\n    });\n  }\n});",
+              "err": {},
+              "uuid": "e2cae189-48e6-4e55-afdb-76144f49b1e9",
+              "parentUUID": "2e767b2f-bca5-4474-be8c-7a4b3ed83001",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Should throw 400 error for invalid note Id",
+              "fullTitle": "Delete notes API Should throw 400 error for invalid note Id",
+              "timedOut": null,
+              "duration": 374,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const noteId = \"64e47116d1562c00f\";\ncy.apiRequest('DELETE', `notes/api/notes/${noteId}`, null, headers).then(response => {\n  const responseBody = response.body;\n  const statusCode = response.status;\n  expect(response.status).to.equal(400);\n  expect(responseBody.success).to.equal(false);\n  expect(responseBody.message).to.equal('Note ID must be a valid ID');\n});",
+              "err": {},
+              "uuid": "ba3d16c4-a137-4912-a3a5-20a1254713b2",
+              "parentUUID": "2e767b2f-bca5-4474-be8c-7a4b3ed83001",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "e2cae189-48e6-4e55-afdb-76144f49b1e9",
+            "ba3d16c4-a137-4912-a3a5-20a1254713b2"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 1227,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "reportDir": "cypress/results/mochawesome",
+        "quite": true,
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}

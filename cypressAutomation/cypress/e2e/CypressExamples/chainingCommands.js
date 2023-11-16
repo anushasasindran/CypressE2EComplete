@@ -1,0 +1,25 @@
+describe('Chaining commands and assertions', () => {
+    
+    it.skip('Chaining commands',() => {
+       cy.visit('https://practice.expandtesting.com/notes/app/login')
+       cy.get('input[data-testid = "login-email"]')
+       .type('sasindran.anusha@gmail.com')
+       .get('input[data-testid = "login-password"]')
+       .type('test123')
+       .get('button[data-testid = "login-submit"]')
+       .contains('Login')
+       .click()
+    })
+    it('Chaining assertions',() => {
+        cy.visit('https://practice.expandtesting.com/notes/app/login')
+        cy.get('input[data-testid = "login-email"]')
+        .type('sasindran.anusha@gmail.com')
+        .get('input[data-testid = "login-password"]')
+        .type('test123')
+        .get('button[data-testid = "login-submit"]')
+        .should('be.visible')
+        .and('contain','Login')
+        .and('have.class','btn-primary')
+        .click()
+     })
+})
